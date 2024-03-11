@@ -29,11 +29,11 @@
           <h1 class="h3 mb-3 fw-normal">Todo List</h1>
       
           <div class="form-floating pb-2">
-            <input type="text" class="form-control" id="todoInput" placeholder="to do list">
-            <label for="todo">New Todo</label>
+            <input type="text" class="form-control" id="todoInput" name="todoInput" placeholder="to do list">
+            <label for="todoInput">New Todo</label>
           </div>
       
-          <div class="btn btn-primary w-100 py-2" type="submit" onclick="onSubmit()">Add</div>
+          <div class="btn btn-primary w-100 py-2" onclick="onSubmit()">Add</div>
         </form>
 
        <div class="m-3" id="todoList"></div>
@@ -52,9 +52,20 @@
           <div class="modal-body">
             <div class="form-floating pb-2">
               <input type="text" class="form-control" id="todoUpdate" placeholder="to do list">
-              <label for="todo">Edit Todo</label>
+              <label for="todoUpdate">Edit Todo</label>
             </div>
-            <div class="btn btn-success">Mark as completed</div>
+            <div class="form-check">
+              <input class="form-check-input" type="radio" value="1" id="completed" name="status" checked>
+              <label class="form-check-label" for="completed">
+                Completed
+              </label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="radio" value="0" id="notcompleted" name="status">
+              <label class="form-check-label" for="notcompleted">
+                Not Completed
+              </label>
+            </div>
           </div>
           <div class="modal-footer">
             <div type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="closeModal">Close</div>
@@ -111,16 +122,18 @@
             "Content-type": "application/json",
             "Authorization": `Bearer ${JWTtoken}`
           }, 
-          body: JSON.stringif({
+          body: JSON.stringify({
             "details": inputValue
           })
         })
-        .then(response => response(json))
+        .then(response => response.json())
         .then(body => {
           fetchAllTodos()
           document.getElementById('todoInput').value=''
         })
-        .catch(err => {debugger})
+        .catch((err) => {
+            console.error(err);
+          })
       }
 
       let selectedTodo = ''
@@ -131,6 +144,12 @@
 
       function onSaveChanges () {
         const inputValue = document.getElementById('todoUpdate').value
+        const status = document.querySelector('input[name="status"]:checked').value
+
+        if(inputValue == '') {
+          alert('The input field cannot be empty')
+          return;
+        }
         fetch(`https://api.kelasprogramming.com/todo/${selectedTodo.id}`, {
           method: 'PUT', 
           headers: {
@@ -139,7 +158,7 @@
           }, 
           body: JSON.stringify({
             "details": inputValue, 
-            "completed": 1
+            "completed": status
           })
         })
         .then(response => response.json())
@@ -164,18 +183,18 @@
           })
           .then(() => {
             const todoItem = document.getElementById(`todo-${id}`);
-            console.log(todoItem);
+            console.log(todoItem)
             if (todoItem) {
-              todoItem.remove();
-              fetchAllTodos(); // Call fetchAllTodos again to update the list of todos
+              todoItem.remove()
+              fetchAllTodos()
             } else {
-              console.warn(`HTML element with ID todo-${id} not found`);
+              fetchAllTodos()
             }
           })
           .catch((err) => {
-            console.error(err);
+            console.error(err)
           })
-        }, 100); // Add a small delay before calling the DELETE request
+        }, 100)
       }
       function logout() {
         localStorage.removeItem('todoJWTtoken')

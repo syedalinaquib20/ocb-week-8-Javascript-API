@@ -1,4 +1,4 @@
-Assignment
+**Assignment**
 1. Complete the registration page.
     - Registration should be possible.
     - After successful registration, redirect to the login page.

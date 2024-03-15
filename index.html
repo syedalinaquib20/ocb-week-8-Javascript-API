@@ -92,9 +92,9 @@
           .then(body => {
             // kita akan convert list kepada list of html elements
             const todoList = body.entry.map((todo) => (
-              `<div class="pt-1 d-flex justify-content-between">
+              `<div class="pt-1 d-flex justify-content-between" id="${todo.id}">
                 ${todo.details}
-                <div class="d-flex" >
+                <div class="d-flex">
                   <button class="btn btn-${todo.completed == 1 ? 'success' : 'warning'} me-1">${todo.completed == 1 ? '<i class="bi bi-check"></i>' : '<i class="bi bi-x"></i>'}</button>
                   <button class='btn btn-primary me-1' data-bs-toggle="modal" data-bs-target="#editTodo" onclick='selectTodo(${JSON.stringify(todo)})' ><i class="bi bi-pencil"></i></button>
                   <button class='btn btn-danger delete-btn' onclick="deleteTodo(${todo.id})"><i class="bi bi-trash"></i></button>
@@ -182,13 +182,12 @@
             }
           })
           .then(() => {
-            const todoItem = document.getElementById(`todo-${id}`);
-            console.log(todoItem)
-            if (todoItem) {
-              todoItem.remove()
-              fetchAllTodos()
+            var element = document.getElementById(id);
+            if (element) {
+              element.parentNode.removeChild(element);
+              console.log(`HTML element with ID todo-${id} found`)
             } else {
-              fetchAllTodos()
+              console.warn(`HTML element with ID todo-${id} not found`)
             }
           })
           .catch((err) => {
